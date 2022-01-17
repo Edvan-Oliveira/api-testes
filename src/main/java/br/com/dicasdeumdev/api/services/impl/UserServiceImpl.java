@@ -11,6 +11,7 @@ import br.com.dicasdeumdev.api.domain.User;
 import br.com.dicasdeumdev.api.domain.dto.UserDTO;
 import br.com.dicasdeumdev.api.repositories.UserRepository;
 import br.com.dicasdeumdev.api.services.UserService;
+import br.com.dicasdeumdev.api.services.exceptions.DataIntegratyViolationException;
 import br.com.dicasdeumdev.api.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -35,6 +36,14 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User create(UserDTO dto) {
+		findByEmail(dto);
 		return repository.save(mapper.map(dto, User.class));
+	}
+	
+	private void findByEmail(UserDTO dto) {
+		Optional<User> user = repository.findByEmail(dto.getEmail());
+		if (user.isPresent()) {
+			throw new DataIntegratyViolationException("E-mail já cadastrado no sistema");
+		}
 	}
 }
