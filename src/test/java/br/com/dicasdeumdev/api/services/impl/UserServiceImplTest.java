@@ -1,10 +1,11 @@
 package br.com.dicasdeumdev.api.services.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -96,7 +97,18 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void testCreate() {
+	void whenCreteThenReturnSuccess() {
+		when(repository.save(any())).thenReturn(user);
+		 
+		User response = service.create(userDTO);
+		
+		assertNotNull(response);
+		assertEquals(User.class, response.getClass());
+		assertEquals(User.class, response.getClass());
+		assertEquals(ID, response.getId());
+		assertEquals(NAME, response.getName());
+		assertEquals(EMAIL, response.getEmail());
+		assertEquals(PASSWORD, response.getPassword());
 	}
 
 	@Test
@@ -106,6 +118,21 @@ class UserServiceImplTest {
 	@Test
 	void testDelete() {
 	}
+	
+	/*
+	 * 		when(repository.findByEmail(anyString())).thenReturn(Optional.empty());
+		when(mapper.map(any(UserDTO.class), User.class)).thenReturn(user);
+		when(repository.save(any(User.class))).thenReturn(user);
+		
+		User response = service.create(userDTO);
+		
+		assertNotNull(response);
+		assertEquals(User.class, response.getClass());
+		assertEquals(ID, response.getId());
+		assertEquals(NAME, response.getName());
+		assertEquals(EMAIL, response.getEmail());
+		assertEquals(PASSWORD, response.getPassword())
+	 * */
 
 	private void startUser() {
 		user = new User(ID, NAME, EMAIL, PASSWORD);
