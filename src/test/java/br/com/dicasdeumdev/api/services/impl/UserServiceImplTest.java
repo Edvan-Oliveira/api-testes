@@ -1,11 +1,13 @@
 package br.com.dicasdeumdev.api.services.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +26,7 @@ import br.com.dicasdeumdev.api.services.exceptions.ObjectNotFoundException;
 @SpringBootTest
 class UserServiceImplTest {
 
+	private static final int INDEX = 0;
 	private static final Integer ID = 1;
 	private static final String NAME = "Valdir";
 	private static final String EMAIL = "valdir@mail.com";
@@ -75,7 +78,21 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void testFindAll() {
+	void whenFindAllThenReturnAnListOfUsers() {
+		when(repository.findAll()).thenReturn(List.of(user));
+
+		List<User> response = service.findAll();
+		
+		assertNotNull(response);
+		assertEquals(1, response.size());
+		assertEquals(User.class, response.get(INDEX).getClass());
+		
+		assertEquals(ID, response.get(INDEX).getId());
+		assertEquals(NAME, response.get(INDEX).getName());
+		assertEquals(EMAIL, response.get(INDEX).getEmail());
+		assertEquals(PASSWORD, response.get(INDEX).getPassword());
+		
+		//assertThat(response).isNotNull().isNotEmpty().hasSize(1);
 	}
 
 	@Test
