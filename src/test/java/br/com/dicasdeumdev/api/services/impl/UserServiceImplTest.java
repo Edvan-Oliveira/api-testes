@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import br.com.dicasdeumdev.api.domain.User;
 import br.com.dicasdeumdev.api.domain.dto.UserDTO;
 import br.com.dicasdeumdev.api.repositories.UserRepository;
+import br.com.dicasdeumdev.api.services.exceptions.DataIntegratyViolationException;
 import br.com.dicasdeumdev.api.services.exceptions.ObjectNotFoundException;
 
 @SpringBootTest
@@ -55,7 +56,7 @@ class UserServiceImplTest {
 	@Test
 	void whenFindByIdThenReturnAnUserInstance() {
 		when(repository.findById(anyInt())).thenReturn(optionalUser);
-		
+
 		User response = service.findById(ID);
 		assertNotNull(response);
 		assertEquals(User.class, response.getClass());
@@ -63,19 +64,19 @@ class UserServiceImplTest {
 		assertEquals(NAME, response.getName());
 		assertEquals(EMAIL, response.getEmail());
 	}
-	
+
 	@Test
 	void whenFindByIdThenReturnAnObjectNotFoundException() {
 		when(repository.findById(anyInt())).thenReturn(Optional.empty());
 		assertThrows(ObjectNotFoundException.class, () -> service.findById(ID));
-		
-		/*when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException("Objeto não encontrado"));
-		try {
-			service.findById(ID);
-		} catch (Exception e) {
-			assertEquals(ObjectNotFoundException.class, e.getClass());
-			assertEquals("Objeto não encontrado", e.getMessage());
-		}*/
+
+		/*
+		 * when(repository.findById(anyInt())).thenThrow(new
+		 * ObjectNotFoundException("Objeto não encontrado")); try {
+		 * service.findById(ID); } catch (Exception e) {
+		 * assertEquals(ObjectNotFoundException.class, e.getClass());
+		 * assertEquals("Objeto não encontrado", e.getMessage()); }
+		 */
 	}
 
 	@Test
@@ -83,25 +84,25 @@ class UserServiceImplTest {
 		when(repository.findAll()).thenReturn(List.of(user));
 
 		List<User> response = service.findAll();
-		
+
 		assertNotNull(response);
 		assertEquals(1, response.size());
 		assertEquals(User.class, response.get(INDEX).getClass());
-		
+
 		assertEquals(ID, response.get(INDEX).getId());
 		assertEquals(NAME, response.get(INDEX).getName());
 		assertEquals(EMAIL, response.get(INDEX).getEmail());
 		assertEquals(PASSWORD, response.get(INDEX).getPassword());
-		
-		//assertThat(response).isNotNull().isNotEmpty().hasSize(1);
+
+		// assertThat(response).isNotNull().isNotEmpty().hasSize(1);
 	}
 
 	@Test
 	void whenCreteThenReturnSuccess() {
 		when(repository.save(any())).thenReturn(user);
-		 
+
 		User response = service.create(userDTO);
-		
+
 		assertNotNull(response);
 		assertEquals(User.class, response.getClass());
 		assertEquals(User.class, response.getClass());
@@ -112,27 +113,19 @@ class UserServiceImplTest {
 	}
 
 	@Test
+	void whenCreteThenReturnAnDataIntegratyViolationException() {
+		when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+		userDTO.setId(2);
+		assertThrows(DataIntegratyViolationException.class, () -> service.create(userDTO));
+	}
+
+	@Test
 	void testUpdate() {
 	}
 
 	@Test
 	void testDelete() {
 	}
-	
-	/*
-	 * 		when(repository.findByEmail(anyString())).thenReturn(Optional.empty());
-		when(mapper.map(any(UserDTO.class), User.class)).thenReturn(user);
-		when(repository.save(any(User.class))).thenReturn(user);
-		
-		User response = service.create(userDTO);
-		
-		assertNotNull(response);
-		assertEquals(User.class, response.getClass());
-		assertEquals(ID, response.getId());
-		assertEquals(NAME, response.getName());
-		assertEquals(EMAIL, response.getEmail());
-		assertEquals(PASSWORD, response.getPassword())
-	 * */
 
 	private void startUser() {
 		user = new User(ID, NAME, EMAIL, PASSWORD);
