@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -28,6 +31,7 @@ import br.com.dicasdeumdev.api.services.exceptions.ObjectNotFoundException;
 @SpringBootTest
 class UserServiceImplTest {
 
+	private static final String E_MAIL_JA_CADASTRADO_NO_SISTEMA = "E-mail já cadastrado no sistema";
 	private static final int INDEX = 0;
 	private static final Integer ID = 1;
 	private static final String NAME = "Valdir";
@@ -117,7 +121,7 @@ class UserServiceImplTest {
 		when(repository.findByEmail(anyString())).thenReturn(optionalUser);
 		userDTO.setId(2);
 		Exception e = assertThrows(DataIntegratyViolationException.class, () -> service.create(userDTO));
-		assertEquals("E-mail já cadastrado no sistema", e.getMessage());
+		assertEquals(E_MAIL_JA_CADASTRADO_NO_SISTEMA, e.getMessage());
 	}
 
 	@Test
@@ -139,11 +143,16 @@ class UserServiceImplTest {
 		when(repository.findByEmail(anyString())).thenReturn(optionalUser);
 		userDTO.setId(2);
 		Exception e = assertThrows(DataIntegratyViolationException.class, () -> service.update(userDTO));
-		assertEquals("E-mail já cadastrado no sistema", e.getMessage());
+		assertEquals(E_MAIL_JA_CADASTRADO_NO_SISTEMA, e.getMessage());
 	}
 	
 	@Test
-	void testDelete() {
+	void deleteWithSuccess() {
+		when(repository.findById(anyInt())).thenReturn(optionalUser);
+		doNothing().when(repository).deleteById(anyInt());
+		service.delete(ID);
+		verify(repository, times(1)).findById(anyInt());
+		verify(repository, times(1)).deleteById(anyInt());
 	}
 
 	private void startUser() {
