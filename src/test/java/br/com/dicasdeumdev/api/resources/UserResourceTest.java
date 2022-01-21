@@ -1,16 +1,19 @@
 package br.com.dicasdeumdev.api.resources;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 
 import br.com.dicasdeumdev.api.domain.User;
 import br.com.dicasdeumdev.api.domain.dto.UserDTO;
@@ -39,13 +42,26 @@ class UserResourceTest {
 	
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.openMocks(this);
+		openMocks(this);
 		startUser();
 	}
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void whenFindByIdThenReturnSuccess() {
+		when(service.findById(anyInt())).thenReturn(user);
+		when(mapper.map(user, UserDTO.class)).thenReturn(userDTO);
+		
+		ResponseEntity<UserDTO> response = resource.findById(ID);
+		assertNotNull(response);
+		assertNotNull(response.getBody());
+		assertEquals(ResponseEntity.class, response.getClass());
+		assertEquals(UserDTO.class, response.getBody().getClass());
+		
+		UserDTO body = response.getBody();
+		assertEquals(ID, body.getId());
+		assertEquals(NAME, body.getName());
+		assertEquals(EMAIL, body.getEmail());
+		assertEquals(PASSWORD, body.getPassword());
 	}
 	
 	private void startUser() {
