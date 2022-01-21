@@ -3,6 +3,7 @@ package br.com.dicasdeumdev.api.resources;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -89,6 +90,18 @@ class UserResourceTest {
 		assertEquals(NAME, body.get(INDEX).getName());
 		assertEquals(EMAIL, body.get(INDEX).getEmail());
 		assertEquals(PASSWORD, body.get(INDEX).getPassword());
+	}
+	
+	@Test
+	void whenCreateThenReturnCreated() {
+		when(service.create(any())).thenReturn(user);
+		
+		ResponseEntity<UserDTO> response = resource.create(userDTO);
+		
+		assertNotNull(response);
+		assertEquals(ResponseEntity.class, response.getClass());
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertNotNull(response.getHeaders().get("Location"));
 	}
 	
 	private void startUser() {
