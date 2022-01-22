@@ -29,7 +29,7 @@ public class ResourceExceptionHandler {
 	}
 	
 	@ExceptionHandler(DataIntegratyViolationException.class)
-	public ResponseEntity<StandardError> dataIntegratyViolationException(DataIntegratyViolationException e, HttpServletRequest r) {
+	public ResponseEntity<StandardError> dataIntegrityViolationException(DataIntegratyViolationException e, HttpServletRequest r) {
 		
 		StandardError error = StandardError.builder()
 				.timestamp(LocalDateTime.now())
